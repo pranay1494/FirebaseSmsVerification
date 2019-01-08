@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etOtp;
     private FirebaseAuth mAuth;
     private String mVerificationId;
+    private PhoneAuthProvider.ForceResendingToken mResendToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +52,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnVerify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                verifyVerificationCode(etOtp.getText().toString());
+            }
+        });
     }
 
     private void sendOtp(String phoneNumber) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,1, TimeUnit.MINUTES,this,mCallbacks);
+    }
+
+    private void resendOtp(String phoneNumber){
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,1, TimeUnit.MINUTES,this,mCallbacks,mResendToken);
     }
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -86,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("otp","inside oncodesent "+s);
 
             mVerificationId = s;
+            mResendToken = forceResendingToken;
         }
     };
 
